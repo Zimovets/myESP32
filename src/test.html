@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="data:,">
+  <style>
+    html {
+      font-family: Helvetica;
+      display: inline-block;
+      margin: 0px auto;
+      text-align: center;
+    }
+
+    .button {
+      background-color: #4CAF50;
+      border: none;
+      color: white;
+      padding: 16px 40px;
+      text-decoration: none;
+      font-size: 30px;
+      margin: 2px;
+      cursor: pointer;
+    }
+
+    .button2 {
+      background-color: #555555;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1>ESP32 Web Server</h1>
+
+  <!-- Button for GPIO 26 -->
+  <p>GPIO 26</p>
+  <button id="button26" class="button" onclick="toggleGPIO(26)">Toggle GPIO 26</button>
+
+  <!-- Button for GPIO 27 -->
+  <p>GPIO 27</p>
+  <button id="button27" class="button" onclick="toggleGPIO(27)">Toggle GPIO 27</button>
+
+  <script>
+    localStorage.setItem(26, 'off');
+    localStorage.setItem(27, 'off');
+
+    function toggleGPIO(gpioNumber) {
+      var xhttp = new XMLHttpRequest();
+      var buttonId = "button" + gpioNumber;
+
+      xhttp.onreadystatechange = function () {
+        if (this.readyState == 4 && this.status == 200) {
+          // Request was successful, update button color based on server response
+          var button = document.getElementById(buttonId);
+          console.log(this.responseText)
+          if (this.responseText.includes("on")) {
+            localStorage.setItem(gpioNumber, 'off');
+            button.style.backgroundColor = "#4CAF50"; // Green for ON
+          } else {
+            localStorage.setItem(gpioNumber, 'on');
+            button.style.backgroundColor = "#555555"; // Gray for OFF
+          }
+        }
+      };
+
+      // Send request to the server
+      xhttp.open("GET", "http://192.168.0.104/" + gpioNumber + "/" + localStorage.getItem(gpioNumber), true);
+      xhttp.send();
+    }
+  </script>
+
+</body>
+
+</html>
